@@ -59,7 +59,7 @@ public class Main {
 	}
 
 	private static Scanner promptAndParse() {
-		// System.out.println("Please input the data here:");
+		System.out.println("Please input the data here:");
 		Scanner scan = new Scanner(System.in);
 		return scan;
 	}
