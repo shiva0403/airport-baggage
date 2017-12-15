@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.apache.log4j.Logger;
 
 public class Main {
 
@@ -16,73 +15,83 @@ public class Main {
 	private final static String FLIGHT_ARRIVAL = "ARRIVAL";
 	private final static String DEST_BAGGAGE_CLAIM = "BaggageClaim";
 	private final static String SINGLE_WHITE_SPACE = " ";
-	private static Logger logger = Logger.getLogger(Main.class);
 
-	 public static void main(String [] args) throws GraphMapException{
-		 	logger.info("Main Method called");;
-	        Scanner scan=promptAndParse();
-	        if(scan != null){
-	            List<Edge> edges= parseInputConveyorSystem(scan);
-	            BaggageRouter baggageRouter = new BaggageRouter();
-	            Map<String,String> departuresMap=parseInputDepartures(scan); 
-	            List<Baggage> bagList = parseInputBags(scan);
-	            scan.close();
-	            for(Baggage bag:bagList){
-	                String bagId=bag.getBagNumber();
-	                String entryGate=bag.getEntryPoint();
-	                String flight = bag.getFlightId();
+	public static void main(String[] args) throws GraphMapException {
+		Scanner scan = null;
+		if (args.length > 0) {
+			File inputFile = new File(args[0].trim());
+			if (inputFile.exists()) {
+				try {
+					scan = new Scanner(inputFile);
 
-	                String destGate;
-	                if(flight.equals(FLIGHT_ARRIVAL)){
-	                    destGate=DEST_BAGGAGE_CLAIM;
-	                }else{
-	                    destGate=departuresMap.get(flight);
-	                }
-	                String pathLine=baggageRouter.findShortestPath(entryGate,destGate,edges);
+				} catch (FileNotFoundException fnfex) {
+					scan = promptAndParse();
+				}
+			} else {
+				scan = promptAndParse();
+			}
+		} else {
+			scan = promptAndParse();
+		}
+		if (scan != null) {
+			List<Edge> edges = parseInputConveyorSystem(scan);
+			BaggageRouter baggageRouter = new BaggageRouter();
+			Map<String, String> departuresMap = parseInputDepartures(scan);
+			List<Baggage> bagList = parseInputBags(scan);
+			scan.close();
+			for (Baggage bag : bagList) {
+				String bagId = bag.getBagNumber();
+				String entryGate = bag.getEntryPoint();
+				String flight = bag.getFlightId();
 
-	                logger.info(bagId+SINGLE_WHITE_SPACE+pathLine);
-	            }
-	        }
+				String destGate;
+				if (flight.equals(FLIGHT_ARRIVAL)) {
+					destGate = DEST_BAGGAGE_CLAIM;
+				} else {
+					destGate = departuresMap.get(flight);
+				}
+				String pathLine = baggageRouter.findShortestPath(entryGate, destGate, edges);
 
-	    }
+				System.out.println(bagId + SINGLE_WHITE_SPACE + pathLine);
+			}
 
-	 
+		}
+	}
+
 	private static Scanner promptAndParse() {
-		logger.info("Please input the data here:");
+		// System.out.println("Please input the data here:");
 		Scanner scan = new Scanner(System.in);
 		return scan;
 	}
 
 	private static List<Edge> parseInputConveyorSystem(Scanner scanner) {
-		logger.info("Loading Conveyor System");
+		// System.out.println("Loading Conveyor System");
 		String graphSection = scanner.nextLine();
 		if (!graphSection.startsWith(INPUT_DATA_SECTION_HEAD)) {
-			throw new IllegalArgumentException(
-					"Illegal arguments or inputs.");
+			throw new IllegalArgumentException("Illegal arguments or inputs.");
 		}
 		String next = scanner.nextLine();
-		logger.info("parseInputGraph -->"+next);
+		// System.out.println("parseInputGraph -->" + next);
 		List<Edge> edges = new ArrayList<>();
 		while (!next.startsWith(INPUT_DATA_SECTION_HEAD)) {
 			String[] parts = next.trim().split("\\s+");
 			if (parts.length >= 3) {
 				Edge directedEdge = new Edge(parts[0], parts[1], Integer.valueOf(parts[2]));
 				edges.add(directedEdge);
-				
+
 				Edge rDirectedEdge = new Edge(parts[1], parts[0], Integer.valueOf(parts[2]));
 				edges.add(rDirectedEdge);
 			} else {
-				throw new IllegalArgumentException(
-						"Illegal arguments or inputs.");
+				throw new IllegalArgumentException("Illegal arguments or inputs.");
 			}
 			next = scanner.nextLine();
 		}
-		logger.info(edges);
+		//System.out.println(edges);
 		return edges;
 	}
 
 	private static Map<String, String> parseInputDepartures(Scanner scanner) {
-		logger.info("Loading Departures");
+		// System.out.println("Loading Departures");
 		String next = scanner.nextLine();
 		Map<String, String> departuresMap = new HashMap<>();
 		while (!next.startsWith(INPUT_DATA_SECTION_HEAD)) {
@@ -90,30 +99,28 @@ public class Main {
 			if (parts.length >= 2) {
 				departuresMap.put(parts[0], parts[1]);
 			} else {
-				throw new IllegalArgumentException(
-						"Illegal arguments or inputs. Please refer to readme for the input data format.");
+				throw new IllegalArgumentException("Illegal arguments or inputs.");
 			}
 			next = scanner.nextLine();
 		}
-		logger.info(departuresMap);
+		// System.out.println(departuresMap);
 		return departuresMap;
 	}
 
 	private static List<Baggage> parseInputBags(Scanner scanner) {
-		logger.info("Loading Input Bags");
-		String next;
-		List<Baggage> bagList = new ArrayList<>();
-		do {
-			next = scanner.nextLine();
-			String[] parts = next.trim().split("\\s+");
-			if (parts.length >= 3) {
-				Baggage bag = new Baggage(parts[0], parts[1], parts[2]);
-				bagList.add(bag);
-			} else {
-				scanner.close();
-				break;
-			}
-		} while (scanner.hasNextLine());
-		return bagList;
+		String next ;
+        List<Baggage> bagList= new ArrayList<>();
+        do{
+            next = scanner.nextLine();
+            String [] parts = next.trim().split("\\s+");
+            if(parts.length >=3){
+                Baggage baggage= new Baggage(parts[0],parts[1],parts[2]);
+                bagList.add(baggage);
+            }else{
+                scanner.close();
+                break;
+            }
+        }while(scanner.hasNextLine());
+        return bagList;
 	}
 }

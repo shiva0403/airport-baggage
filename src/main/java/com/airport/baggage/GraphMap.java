@@ -14,7 +14,6 @@ public class GraphMap {
 
          graphMap = new HashMap<>(edges.size());
 
-        //Populated all the vertices from the edges
         for (Edge e : edges) {
             if (!graphMap.containsKey(e.getSource().getNodeName())){
             	graphMap.put(e.getSource().getNodeName(), new Node(e.getSource().getNodeName()));
@@ -24,14 +23,13 @@ public class GraphMap {
             }
         }
 
-        //Set all the linked nodes
         for (Edge e : edges) {
             graphMap.get(e.getSource().getNodeName()).getLinkedNodes().put(graphMap.get(e.getDestination().getNodeName()), e.getTime());
         }
     }
     public void graphMap(String startName) throws GraphMapException {
         if (!graphMap.containsKey(startName)) {
-            throw new GraphMapException("This DijkstraGraphMap does not contain the starting Vertex named:"+startName);
+            throw new GraphMapException("This GraphMap does not contain the starting Node named:"+startName);
         }
         final Node source = graphMap.get(startName);
         NavigableSet<Node> queue = new TreeSet<>();
@@ -48,7 +46,7 @@ public class GraphMap {
     
     public List<Node> getShortestPath(String endName) throws GraphMapException{
         if (!graphMap.containsKey(endName)) {
-            throw new GraphMapException("Graph doesn't contain end vertex : "+endName);
+            throw new GraphMapException("Graph doesn't contain end Node : "+endName);
         }
 
         return graphMap.get(endName).getShortestPathTo();

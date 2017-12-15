@@ -57,10 +57,10 @@ public class Node implements Comparable<Node>{
     {
         List<Node> path = new ArrayList<>();
         path.add(this);
-        Node vertex=this.getPrevNode();
-        while (vertex!=null && !path.contains(vertex)) {
-            path.add(vertex);
-            vertex=vertex.getPrevNode();
+        Node node=this.getPrevNode();
+        while (node!=null && !path.contains(node)) {
+            path.add(node);
+            node=node.getPrevNode();
         }
 
         Collections.reverse(path);

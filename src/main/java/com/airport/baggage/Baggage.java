@@ -24,6 +24,9 @@ public class Baggage {
 		return flightId;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "Baggage :"+bagNumber+","+entryPoint+","+flightId;
+	}
 	
 }
